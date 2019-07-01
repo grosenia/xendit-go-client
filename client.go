@@ -14,9 +14,8 @@ import (
 
 // Client struct
 type Client struct {
-	APIEnvType EnvironmentType
-	ClientKey  string
-	ServerKey  string
+	APIEnvType   EnvironmentType
+	SecretAPIKey string
 
 	LogLevel int
 	Logger   *log.Logger
@@ -56,7 +55,7 @@ func (c *Client) NewRequest(method string, fullPath string, body io.Reader) (*ht
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
-	req.SetBasicAuth(c.ServerKey, "")
+	req.SetBasicAuth(c.SecretAPIKey, "")
 
 	return req, nil
 }
@@ -118,7 +117,7 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 	return nil
 }
 
-// Call the Midtrans API at specific `path` using the specified HTTP `method`. The result will be
+// Call the Xendit API at specific `path` using the specified HTTP `method`. The result will be
 // given to `v` if there is no error. If any error occurred, the return of this function is the error
 // itself, otherwise nil.
 func (c *Client) Call(method, path string, body io.Reader, v interface{}) error {
