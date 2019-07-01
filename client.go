@@ -27,7 +27,7 @@ func NewClient() Client {
 	return Client{
 		APIEnvType: Sandbox,
 
-		// LogLevel is the logging level used by the Midtrans library
+		// LogLevel is the logging level used by the library
 		// 0: No logging
 		// 1: Errors only
 		// 2: Errors + informational (default)
@@ -101,7 +101,7 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 	}
 
 	if logLevel > 2 {
-		logger.Println("Midtrans response: ", string(resBody))
+		logger.Println("Payment response: ", string(resBody))
 	}
 
 	if v != nil {
