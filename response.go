@@ -30,3 +30,14 @@ type InvoiceAvailableBank struct {
 	AccountHolderName string  `json:"account_holder_name"`
 	IdentityAmount    float64 `json:"identity_amount"`
 }
+
+// XenditNotificationResp is standard response for Xendit
+type XenditNotificationResp struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+// XenditPaymentResp is standard response to Payment
+type XenditPaymentResp struct {
+	PaymentURL string `json:"payment_url"`
+}
