@@ -1,6 +1,8 @@
 package xenditgo
 
 import (
+	"bytes"
+	"encoding/json"
 	"io"
 	"strings"
 )
@@ -10,14 +12,31 @@ type InvoiceGateway struct {
 	Client Client
 }
 
-// Create : call to create invoice
-func (gateway *InvoiceGateway) Create(method, path string, body io.Reader, v interface{}) error {
+// Call : basic call
+func (gateway *InvoiceGateway) Call(method, path string, body io.Reader, v interface{}) error {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
 	}
 
 	path = gateway.Client.APIEnvType.String() + path
 	return gateway.Client.Call(method, path, body, v)
+}
+
+// CreateInvoice call create invoice API
+func (gateway *InvoiceGateway) CreateInvoice(req *XenditCreateInvoiceReq) (XenditCreateInvoiceResp, error) {
+	resp := XenditCreateInvoiceResp{}
+	jsonReq, _ := json.Marshal(req)
+
+	err := gateway.Call("POST", "/v2/invoices", bytes.NewBuffer(jsonReq), &resp)
+	if err != nil {
+		gateway.Client.Logger.Println("Error charging: ", err)
+		return resp, err
+	}
+
+	if resp.Status != "" {
+		gateway.Client.Logger.Println(resp.Status)
+	}
+	return resp, nil
 }
 
 /*
