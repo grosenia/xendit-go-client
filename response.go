@@ -13,8 +13,8 @@ type XenditCreateInvoiceResp struct {
 	Description             string                 `json:"description"`
 	ExpiryDate              string                 `json:"expiry_date"`
 	InvoiceURL              string                 `json:"invoice_url"`
-	ShouldExcludeCreditCard string                 `json:"should_exclude_credit_card"`
-	ShouldSendEmail         string                 `json:"should_send_email"`
+	ShouldExcludeCreditCard bool                   `json:"should_exclude_credit_card" `
+	ShouldSendEmail         bool                   `json:"should_send_email"`
 	CreatedDateTime         string                 `json:"created"`
 	UpdatedDateTime         string                 `json:"updated"`
 	AvailableBanks          []InvoiceAvailableBank `json:"available_banks"`
@@ -22,11 +22,11 @@ type XenditCreateInvoiceResp struct {
 
 // InvoiceAvailableBank is options of invoice available bank
 type InvoiceAvailableBank struct {
-	BankCode          string `json:"bank_code"`
-	CollectionType    string `json:"collection_type"`
-	BankAccountNumber string `json:"bank_account_number"`
-	TransferAmount    string `json:"transfer_amount"`
-	BankBranch        string `json:"bank_branch"`
-	AccountHolderName string `json:"account_holder_name"`
-	IdentityAmount    string `json:"identity_amount"`
+	BankCode          string  `json:"bank_code"`
+	CollectionType    string  `json:"collection_type"`
+	BankAccountNumber string  `json:"bank_account_number"`
+	TransferAmount    float64 `json:"transfer_amount"`
+	BankBranch        string  `json:"bank_branch"`
+	AccountHolderName string  `json:"account_holder_name"`
+	IdentityAmount    float64 `json:"identity_amount"`
 }

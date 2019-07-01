@@ -35,7 +35,7 @@ func main() {
 	amount := 62000.00
 	description := "Handuk 2 pcs"
 	shouldSendEmail := true
-	shouldExcludeCreditCard := true
+	// shouldExcludeCreditCard := true
 
 	// This VA ID is already created before
 	// TODO: should take out the Account ID to ENV
@@ -47,20 +47,23 @@ func main() {
 	fmt.Println("Generated Order ID: " + orderID)
 	fmt.Println("Call back VA ID: " + callbackVirtualAccountID)
 
+	// Need to check available bank
+	banksArray := []string{"BCA", "BNI", "MANDIRI", "BRI", "PERMATA"}
+
 	var invoiceRequest = &xenditgo.XenditCreateInvoiceReq{
 		ExternalID:               orderID,
 		PayerEmail:               payerEmail,
 		Amount:                   amount,
 		Description:              description,
 		ShouldSendEmail:          shouldSendEmail,
-		ShouldExcludeCreditCard:  shouldExcludeCreditCard,
 		CallbackVirtualAccountID: callbackVirtualAccountID,
 		InvoiceDuration:          invoiceDuration,
+		PaymentMethod:            banksArray,
 	}
 
 	resp, err := invoiceGateway.CreateInvoice(invoiceRequest)
-	fmt.Println("Invoice URL: " + resp.InvoiceURL)
 
+	fmt.Println("Invoice URL: " + resp.InvoiceURL)
 }
 
 func setupClient() {
