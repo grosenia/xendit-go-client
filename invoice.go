@@ -9,8 +9,7 @@ import (
 
 // InvoiceGateway struct
 type InvoiceGateway struct {
-	Client                   Client
-	InvoiceDurationInSeconds int32
+	Client Client
 }
 
 // Call : basic call

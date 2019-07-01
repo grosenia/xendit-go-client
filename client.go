@@ -12,8 +12,9 @@ import (
 
 // Client struct
 type Client struct {
-	APIEnvType   EnvironmentType
-	SecretAPIKey string
+	APIEnvType               EnvironmentType
+	SecretAPIKey             string
+	InvoiceDurationInSeconds int
 
 	LogLevel int
 	Logger   *log.Logger
