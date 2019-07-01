@@ -1,0 +1,4 @@
+github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927 h1:SKI1/fuSdodxmNNyVBR8d7X/HuLnRpvvFO0AgyQk764=
+github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927/go.mod h1:h/aW8ynjgkuj+NQRlZcDbAbM1ORAbXjXX77sX7T289U=
+github.com/veritrans/go-midtrans v0.0.0-20190614103510-9d3aefaf0e9e h1:u0A0n7LIOEubYSxJJyZQXzDTFawHiO+88rjFW+3keKk=
+github.com/veritrans/go-midtrans v0.0.0-20190614103510-9d3aefaf0e9e/go.mod h1:21mwYsDK+z+5kR2fvUB8n2yijZZm504Vjzk1s0rNQJg=
