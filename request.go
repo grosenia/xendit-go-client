@@ -11,3 +11,11 @@ type XenditCreateInvoiceReq struct {
 	InvoiceDuration          int      `json:"invoice_duration"`
 	PaymentMethod            []string `json:"payment_methods"`
 }
+
+// XenditCreateFixedVaReq  is JSON request to be sent to Xendit to create Callback Fixed VA
+type XenditCreateFixedVaReq struct {
+	ExternalID           string `json:"external_id"`
+	BankCode             string `json:"bank_code"`
+	Name                 string `json:"name"`
+	VirtualAccountNumber string `json:"virtual_account_number,omitempty"`
+}

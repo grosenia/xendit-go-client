@@ -39,6 +39,23 @@ func (gateway *InvoiceGateway) CreateInvoice(req *XenditCreateInvoiceReq) (Xendi
 	return resp, nil
 }
 
+// CreateFixedVa call create fixed va API
+func (gateway *InvoiceGateway) CreateFixedVa(req *XenditCreateFixedVaReq) (XenditCreateFixedVaResp, error) {
+	resp := XenditCreateFixedVaResp{}
+	jsonReq, _ := json.Marshal(req)
+
+	err := gateway.Call("POST", "/callback_virtual_accounts", bytes.NewBuffer(jsonReq), &resp)
+	if err != nil {
+		gateway.Client.Logger.Println("Error charging: ", err)
+		return resp, err
+	}
+
+	if resp.Status != "" {
+		gateway.Client.Logger.Println(resp.Status)
+	}
+	return resp, nil
+}
+
 /*
 // Charge : Perform transaction using ChargeReq
 func (gateway *InvoiceGateway) Charge(req *ChargeReq) (Response, error) {

@@ -20,6 +20,23 @@ type XenditCreateInvoiceResp struct {
 	AvailableBanks          []InvoiceAvailableBank `json:"available_banks"`
 }
 
+// XenditCreateFixedVaResp is JSON response returned by Xendit when cal Create Callback Fixed VA
+type XenditCreateFixedVaResp struct {
+	ID              string `json:"id"`
+	OwnerID         string `json:"owner_id"`
+	ExternalID      string `json:"external_id"`
+	MerchantCode    string `json:"merchant_code"`
+	AccountNumber   string `json:"account_number"`
+	BankCode        string `json:"bank_code"`
+	Name            string `json:"name"`
+	IsClosed        string `json:"is_closed"`
+	ExpirationDate  string `json:"expiration_date"`
+	IsSingleUse     string `json:"is_single_use"`
+	Status          string `json:"status"`
+	CreatedDateTime string `json:"created"`
+	UpdatedDateTime string `json:"updated"`
+}
+
 // InvoiceAvailableBank is options of invoice available bank
 type InvoiceAvailableBank struct {
 	BankCode          string  `json:"bank_code"`
