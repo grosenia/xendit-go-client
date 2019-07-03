@@ -29,9 +29,9 @@ type XenditCreateFixedVaResp struct {
 	AccountNumber   string `json:"account_number"`
 	BankCode        string `json:"bank_code"`
 	Name            string `json:"name"`
-	IsClosed        string `json:"is_closed"`
+	IsClosed        bool   `json:"is_closed"`
 	ExpirationDate  string `json:"expiration_date"`
-	IsSingleUse     string `json:"is_single_use"`
+	IsSingleUse     bool   `json:"is_single_use"`
 	Status          string `json:"status"`
 	CreatedDateTime string `json:"created"`
 	UpdatedDateTime string `json:"updated"`
