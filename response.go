@@ -33,6 +33,7 @@ type XenditCreateFixedVaResp struct {
 	ExpirationDate  string `json:"expiration_date"`
 	IsSingleUse     bool   `json:"is_single_use"`
 	Status          string `json:"status"`
+	Currency        string `json:"currency"`
 	CreatedDateTime string `json:"created"`
 	UpdatedDateTime string `json:"updated"`
 }
