@@ -2,7 +2,7 @@
 
 This is the package in Go language to communicate with Xendit
 
-(Build Status)[https://api.travis-ci.com/grosenia/xendit-go-client.svg?branch=master]
+(Build Status)[https://api.travis-ci.com/grosenia/xendit-go-client.svg?branch=master] [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Supported features:
 - Creating Invoice
