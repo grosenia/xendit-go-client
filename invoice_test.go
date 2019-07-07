@@ -7,7 +7,7 @@ import (
 	xenditgo "github.com/grosenia/xendit-go-client"
 )
 
-func TestDefaultEnvironmentType(t *testing.T) {
+func TestInvoiceEnvironmentType(t *testing.T) {
 	is := is.New(t)
 
 	client := xenditgo.NewClient()
