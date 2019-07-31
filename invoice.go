@@ -48,32 +48,39 @@ func (gateway *InvoiceGateway) CreateInvoice(req *XenditCreateInvoiceReq) (*Xend
 	}
 
 	if httpStatus != 200 {
-		// Something wrong
-		return nil, err
-	}
-
-	if resp.Status != "" {
-		gateway.Client.Logger.Println(resp.Status)
+		resp.ErrorStatus = true
+	} else {
+		resp.ErrorStatus = false
 	}
 
 	return &resp, nil
 }
 
 // CreateFixedVa call create fixed va API
-func (gateway *InvoiceGateway) CreateFixedVa(req *XenditCreateFixedVaReq) (XenditCreateFixedVaResp, error) {
+func (gateway *InvoiceGateway) CreateFixedVa(req *XenditCreateFixedVaReq) (*XenditCreateFixedVaResp, error) {
 	resp := XenditCreateFixedVaResp{}
 	jsonReq, _ := json.Marshal(req)
 
-	err := gateway.Call("POST", "/callback_virtual_accounts", bytes.NewBuffer(jsonReq), &resp)
+	path := gateway.Client.APIEnvType.String() + "/callback_virtual_accounts"
+	httpRequest, err := gateway.Client.NewRequest("POST", path, bytes.NewBuffer(jsonReq))
+
 	if err != nil {
-		gateway.Client.Logger.Println("Error charging: ", err)
-		return resp, err
+		return nil, err
 	}
 
-	if resp.Status != "" {
-		gateway.Client.Logger.Println(resp.Status)
+	httpStatus, err := gateway.Client.ExecuteRequest(httpRequest, &resp)
+	if err != nil {
+		gateway.Client.Logger.Println("Error charging: ", err)
+		return nil, err
 	}
-	return resp, nil
+
+	if httpStatus != 200 {
+		resp.ErrorStatus = true
+	} else {
+		resp.ErrorStatus = false
+	}
+
+	return &resp, nil
 }
 
 /*

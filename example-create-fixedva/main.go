@@ -42,6 +42,17 @@ func main() {
 
 	resp, err := invoiceGateway.CreateFixedVa(createFixedVaRequest)
 
+	if err != nil {
+		fmt.Println("Error server")
+		return
+	}
+
+	if resp.ErrorStatus {
+		// Ada error
+		fmt.Println("Error: ", resp.Error())
+		return
+	}
+
 	fmt.Println("Created fixed VA Response: ")
 	fmt.Println(resp)
 }

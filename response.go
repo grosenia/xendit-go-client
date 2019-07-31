@@ -23,20 +23,19 @@ type XenditCreateInvoiceResp struct {
 	UpdatedDateTime         string                 `json:"updated"`
 	AvailableBanks          []InvoiceAvailableBank `json:"available_banks"`
 
-	// For Errors
-	ErrorCode    string `json:"error_code"`
-	ErrorMessage string `json:"message"`
+	XenditErrorResponse
 }
 
 // XenditErrorResponse xendit error response
 type XenditErrorResponse struct {
 	// For Errors
-	Code    string `json:"error_code"`
-	Message string `json:"message"`
+	ErrorCode    string `json:"error_code"`
+	ErrorMessage string `json:"message"`
+	ErrorStatus  bool   `json:"-"`
 }
 
-func (e *XenditErrorResponse) Error() string {
-	return fmt.Sprintf("[%s] %s", e.Code, e.Message)
+func (e XenditErrorResponse) Error() string {
+	return fmt.Sprintf("[%s] %s", e.ErrorCode, e.ErrorMessage)
 }
 
 // XenditCreateFixedVaResp is JSON response returned by Xendit when cal Create Callback Fixed VA
@@ -55,6 +54,8 @@ type XenditCreateFixedVaResp struct {
 	Currency        string `json:"currency"`
 	CreatedDateTime string `json:"created"`
 	UpdatedDateTime string `json:"updated"`
+
+	XenditErrorResponse
 }
 
 // InvoiceAvailableBank is options of invoice available bank
