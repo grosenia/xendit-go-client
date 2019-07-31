@@ -31,7 +31,7 @@ func main() {
 
 	// Example
 	externalID := generateOrderID()
-	bankCode := "BCA" // BCA / BNI / MANDIRI / PERMATA / BRI
+	bankCode := "BCAX" // BCA / BNI / MANDIRI / PERMATA / BRI
 	name := "Ali Irawan"
 
 	var createFixedVaRequest = &xenditgo.XenditCreateFixedVaReq{
@@ -52,6 +52,7 @@ func setupClient() {
 	// TODO: should put in config file
 	xenditclient.SecretAPIKey = viper.GetString("KEY_WRITE_MONEY_IN")
 	xenditclient.APIEnvType = xenditgo.Sandbox
+	xenditclient.LogLevel = 3
 
 	invoiceGateway = xenditgo.InvoiceGateway{
 		Client: xenditclient,
