@@ -77,6 +77,10 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 		}
 		return err
 	}
+
+	// Check http status code
+	logger.Println("HTTP Status Code: ", res.StatusCode, http.StatusText(res.StatusCode))
+
 	defer res.Body.Close()
 
 	if logLevel > 2 {
