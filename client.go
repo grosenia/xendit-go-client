@@ -60,7 +60,7 @@ func (c *Client) NewRequest(method string, fullPath string, body io.Reader) (*ht
 }
 
 // ExecuteRequest : execute request
-func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
+func (c *Client) ExecuteRequest(req *http.Request, v interface{}) (httpStatus int, err error) {
 	logLevel := c.LogLevel
 	logger := c.Logger
 
@@ -75,8 +75,9 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 		if logLevel > 0 {
 			logger.Println("Cannot send request: ", err)
 		}
-		return err
+		return httpStatus, err
 	}
+
 	defer res.Body.Close()
 
 	if logLevel > 2 {
@@ -87,7 +88,7 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 		if logLevel > 0 {
 			logger.Println("Request failed: ", err)
 		}
-		return err
+		return httpStatus, err
 	}
 
 	resBody, err := ioutil.ReadAll(res.Body)
@@ -95,7 +96,7 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 		if logLevel > 0 {
 			logger.Println("Cannot read response body: ", err)
 		}
-		return err
+		return httpStatus, err
 	}
 
 	if logLevel > 2 {
@@ -104,7 +105,7 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 
 	if v != nil {
 		if err = json.Unmarshal(resBody, v); err != nil {
-			return err
+			return httpStatus, err
 		}
 
 		// we're safe to reflect status_code if response not an array
@@ -113,20 +114,21 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 		// }
 	}
 
-	return nil
+	return res.StatusCode, nil
 }
 
 // Call the Xendit API at specific `path` using the specified HTTP `method`. The result will be
 // given to `v` if there is no error. If any error occurred, the return of this function is the error
 // itself, otherwise nil.
-func (c *Client) Call(method, path string, body io.Reader, v interface{}) error {
+/*
+func (c *Client) Call(method, path string, body io.Reader, v interface{}) (httpStatus int, err error) {
 	req, err := c.NewRequest(method, path, body)
 
 	if err != nil {
-		return err
+		return httpStatus, err
 	}
 
 	return c.ExecuteRequest(req, v)
 }
-
+*/
 // ===================== END HTTP CLIENT ================================================

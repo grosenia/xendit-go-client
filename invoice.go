@@ -3,8 +3,6 @@ package xenditgo
 import (
 	"bytes"
 	"encoding/json"
-	"io"
-	"strings"
 )
 
 // InvoiceGateway struct
@@ -13,47 +11,76 @@ type InvoiceGateway struct {
 }
 
 // Call : basic call
+/*
 func (gateway *InvoiceGateway) Call(method, path string, body io.Reader, v interface{}) error {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
 	}
 
 	path = gateway.Client.APIEnvType.String() + path
-	return gateway.Client.Call(method, path, body, v)
+
+	req, err := gateway.Client.NewRequest(method, path, body)
+
+	if err != nil {
+		return err
+	}
+
+	return gateway.Client.ExecuteRequest(req, v)
 }
+*/
 
 // CreateInvoice call create invoice API
-func (gateway *InvoiceGateway) CreateInvoice(req *XenditCreateInvoiceReq) (XenditCreateInvoiceResp, error) {
+func (gateway *InvoiceGateway) CreateInvoice(req *XenditCreateInvoiceReq) (*XenditCreateInvoiceResp, error) {
 	resp := XenditCreateInvoiceResp{}
 	jsonReq, _ := json.Marshal(req)
 
-	err := gateway.Call("POST", "/v2/invoices", bytes.NewBuffer(jsonReq), &resp)
+	path := gateway.Client.APIEnvType.String() + "/v2/invoices"
+	httpRequest, err := gateway.Client.NewRequest("POST", path, bytes.NewBuffer(jsonReq))
+
 	if err != nil {
-		gateway.Client.Logger.Println("Error charging: ", err)
-		return resp, err
+		return nil, err
 	}
 
-	if resp.Status != "" {
-		gateway.Client.Logger.Println(resp.Status)
+	httpStatus, err := gateway.Client.ExecuteRequest(httpRequest, &resp)
+	if err != nil {
+		gateway.Client.Logger.Println("Error charging: ", err)
+		return nil, err
 	}
-	return resp, nil
+
+	if httpStatus != 200 {
+		resp.ErrorStatus = true
+	} else {
+		resp.ErrorStatus = false
+	}
+
+	return &resp, nil
 }
 
 // CreateFixedVa call create fixed va API
-func (gateway *InvoiceGateway) CreateFixedVa(req *XenditCreateFixedVaReq) (XenditCreateFixedVaResp, error) {
+func (gateway *InvoiceGateway) CreateFixedVa(req *XenditCreateFixedVaReq) (*XenditCreateFixedVaResp, error) {
 	resp := XenditCreateFixedVaResp{}
 	jsonReq, _ := json.Marshal(req)
 
-	err := gateway.Call("POST", "/callback_virtual_accounts", bytes.NewBuffer(jsonReq), &resp)
+	path := gateway.Client.APIEnvType.String() + "/callback_virtual_accounts"
+	httpRequest, err := gateway.Client.NewRequest("POST", path, bytes.NewBuffer(jsonReq))
+
 	if err != nil {
-		gateway.Client.Logger.Println("Error charging: ", err)
-		return resp, err
+		return nil, err
 	}
 
-	if resp.Status != "" {
-		gateway.Client.Logger.Println(resp.Status)
+	httpStatus, err := gateway.Client.ExecuteRequest(httpRequest, &resp)
+	if err != nil {
+		gateway.Client.Logger.Println("Error charging: ", err)
+		return nil, err
 	}
-	return resp, nil
+
+	if httpStatus != 200 {
+		resp.ErrorStatus = true
+	} else {
+		resp.ErrorStatus = false
+	}
+
+	return &resp, nil
 }
 
 /*
