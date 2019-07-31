@@ -59,3 +59,16 @@ type XenditNotificationResp struct {
 type XenditPaymentResp struct {
 	PaymentURL string `json:"payment_url"`
 }
+
+// XenditVerifyPaymentResponse type response when verifying payment notification
+type XenditVerifyPaymentResponse struct {
+	ID                       string  `json:"id"`
+	PaymentID                string  `json:"payment_id"`
+	CallbackVirtualAccountID string  `json:"callback_virtual_account_id"`
+	ExternalID               string  `json:"external_id"`
+	MerchantCode             string  `json:"merchant_code"`
+	AccountNumber            string  `json:"account_number"`
+	BankCode                 string  `json:"bank_code"`
+	Amount                   float64 `json:"amount"`
+	TransactionTimestamp     string  `json:"transaction_timestamp"`
+}
