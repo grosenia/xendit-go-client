@@ -80,6 +80,11 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) error {
 
 	// Check http status code
 	logger.Println("HTTP Status Code: ", res.StatusCode, http.StatusText(res.StatusCode))
+	if res.StatusCode == 200 {
+		// TODO
+	}
+	// TODO untuk yang 4XX
+	// TODO untuk yang 5XX
 
 	defer res.Body.Close()
 
