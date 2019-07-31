@@ -1,5 +1,9 @@
 package xenditgo
 
+import (
+	"fmt"
+)
+
 // XenditCreateInvoiceResp is JSON response returned by Xendit when an Invoice Created
 type XenditCreateInvoiceResp struct {
 	InvoiceID               string                 `json:"id"`
@@ -18,6 +22,21 @@ type XenditCreateInvoiceResp struct {
 	CreatedDateTime         string                 `json:"created"`
 	UpdatedDateTime         string                 `json:"updated"`
 	AvailableBanks          []InvoiceAvailableBank `json:"available_banks"`
+
+	// For Errors
+	ErrorCode    string `json:"error_code"`
+	ErrorMessage string `json:"message"`
+}
+
+// XenditErrorResponse xendit error response
+type XenditErrorResponse struct {
+	// For Errors
+	Code    string `json:"error_code"`
+	Message string `json:"message"`
+}
+
+func (e *XenditErrorResponse) Error() string {
+	return fmt.Sprintf("[%s] %s", e.Code, e.Message)
 }
 
 // XenditCreateFixedVaResp is JSON response returned by Xendit when cal Create Callback Fixed VA
