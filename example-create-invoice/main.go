@@ -51,14 +51,14 @@ func main() {
 	banksArray := []string{"BCA", "BNI", "MANDIRI", "BRI", "PERMATA"}
 
 	var invoiceRequest = &xenditgo.XenditCreateInvoiceReq{
-		ExternalID:               orderID,
-		PayerEmail:               payerEmail,
-		Amount:                   amount,
-		Description:              description,
-		ShouldSendEmail:          shouldSendEmail,
-		CallbackVirtualAccountID: callbackVirtualAccountID,
-		InvoiceDuration:          invoiceDuration,
-		PaymentMethod:            banksArray,
+		ExternalID:      orderID,
+		PayerEmail:      payerEmail,
+		Amount:          amount,
+		Description:     description,
+		ShouldSendEmail: shouldSendEmail,
+		// CallbackVirtualAccountID: callbackVirtualAccountID,
+		InvoiceDuration: invoiceDuration,
+		PaymentMethod:   banksArray,
 	}
 
 	resp, err := invoiceGateway.CreateInvoice(invoiceRequest)
