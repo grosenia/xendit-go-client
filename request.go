@@ -7,7 +7,7 @@ type XenditCreateInvoiceReq struct {
 	PayerEmail               string   `json:"payer_email"`
 	Description              string   `json:"description"`
 	ShouldSendEmail          bool     `json:"should_send_email"`
-	CallbackVirtualAccountID string   `json:"callback_virtual_account_id"`
+	CallbackVirtualAccountID string   `json:"callback_virtual_account_id,omitempty"`
 	InvoiceDuration          int      `json:"invoice_duration"`
 	PaymentMethod            []string `json:"payment_methods"`
 }
