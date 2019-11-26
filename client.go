@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/nbs-go/clog"
+	_ "github.com/nbs-go/clogrus"
 )
 
 // Client struct
@@ -17,7 +18,6 @@ type Client struct {
 	InvoiceDurationInSeconds int
 
 	LogLevel int
-	Logger   *log.Logger
 }
 
 // NewClient : this function will always be called when the library is in use
@@ -31,7 +31,6 @@ func NewClient() Client {
 		// 2: Errors + informational (default)
 		// 3: Errors + informational + debug
 		LogLevel: 2,
-		Logger:   log.New(os.Stderr, "", log.LstdFlags),
 	}
 }
 
@@ -42,12 +41,12 @@ var httpClient = &http.Client{Timeout: defHTTPTimeout}
 // NewRequest : send new request
 func (c *Client) NewRequest(method string, fullPath string, body io.Reader) (*http.Request, error) {
 	logLevel := c.LogLevel
-	logger := c.Logger
+	log := clog.Get()
 
 	req, err := http.NewRequest(method, fullPath, body)
 	if err != nil {
 		if logLevel > 0 {
-			logger.Println("Request creation failed: ", err)
+			log.Error("Request creation failed ", err)
 		}
 		return nil, err
 	}
@@ -62,10 +61,10 @@ func (c *Client) NewRequest(method string, fullPath string, body io.Reader) (*ht
 // ExecuteRequest : execute request
 func (c *Client) ExecuteRequest(req *http.Request, v interface{}) (httpStatus int, err error) {
 	logLevel := c.LogLevel
-	logger := c.Logger
+	log := clog.Get()
 
 	if logLevel > 1 {
-		logger.Println("Request ", req.Method, ": ", req.URL.Host, req.URL.Path)
+		log.Debugf("Request %s : %s %s", req.Method, req.URL.Host, req.URL.Path)
 	}
 
 	start := time.Now()
@@ -73,7 +72,7 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) (httpStatus in
 	res, err := httpClient.Do(req)
 	if err != nil {
 		if logLevel > 0 {
-			logger.Println("Cannot send request: ", err)
+			log.Error("Cannot send request ", err)
 		}
 		return httpStatus, err
 	}
@@ -81,12 +80,12 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) (httpStatus in
 	defer res.Body.Close()
 
 	if logLevel > 2 {
-		logger.Println("Completed in ", time.Since(start))
+		log.Debugf("Completed in %s", time.Since(start).String())
 	}
 
 	if err != nil {
 		if logLevel > 0 {
-			logger.Println("Request failed: ", err)
+			log.Error("Request failed ", err)
 		}
 		return httpStatus, err
 	}
@@ -94,13 +93,13 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) (httpStatus in
 	resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		if logLevel > 0 {
-			logger.Println("Cannot read response body: ", err)
+			log.Error("Cannot read response body ", err)
 		}
 		return httpStatus, err
 	}
 
 	if logLevel > 2 {
-		logger.Println("Payment response: ", string(resBody))
+		log.Debugf("Payment response %s", string(resBody))
 	}
 
 	if v != nil {

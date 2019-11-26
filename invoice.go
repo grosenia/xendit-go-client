@@ -3,6 +3,9 @@ package xenditgo
 import (
 	"bytes"
 	"encoding/json"
+
+	"github.com/nbs-go/clog"
+	_ "github.com/nbs-go/clogrus"
 )
 
 // InvoiceGateway struct
@@ -31,6 +34,7 @@ func (gateway *InvoiceGateway) Call(method, path string, body io.Reader, v inter
 
 // CreateInvoice call create invoice API
 func (gateway *InvoiceGateway) CreateInvoice(req *XenditCreateInvoiceReq) (*XenditCreateInvoiceResp, error) {
+	log := clog.Get()
 	resp := XenditCreateInvoiceResp{}
 	jsonReq, _ := json.Marshal(req)
 
@@ -43,7 +47,7 @@ func (gateway *InvoiceGateway) CreateInvoice(req *XenditCreateInvoiceReq) (*Xend
 
 	httpStatus, err := gateway.Client.ExecuteRequest(httpRequest, &resp)
 	if err != nil {
-		gateway.Client.Logger.Println("Error charging: ", err)
+		log.Error("Error charging ", err)
 		return nil, err
 	}
 
@@ -58,6 +62,7 @@ func (gateway *InvoiceGateway) CreateInvoice(req *XenditCreateInvoiceReq) (*Xend
 
 // CreateFixedVa call create fixed va API
 func (gateway *InvoiceGateway) CreateFixedVa(req *XenditCreateFixedVaReq) (*XenditCreateFixedVaResp, error) {
+	log := clog.Get()
 	resp := XenditCreateFixedVaResp{}
 	jsonReq, _ := json.Marshal(req)
 
@@ -70,7 +75,7 @@ func (gateway *InvoiceGateway) CreateFixedVa(req *XenditCreateFixedVaReq) (*Xend
 
 	httpStatus, err := gateway.Client.ExecuteRequest(httpRequest, &resp)
 	if err != nil {
-		gateway.Client.Logger.Println("Error charging: ", err)
+		log.Error("Error charging ", err)
 		return nil, err
 	}
 
