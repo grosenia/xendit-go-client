@@ -92,3 +92,17 @@ type XenditVerifyPaymentResponse struct {
 	Amount                   float64 `json:"amount"`
 	TransactionTimestamp     string  `json:"transaction_timestamp"`
 }
+
+// XenditCreatePayoutResp response from payout
+type XenditCreatePayoutResp struct {
+	ID               string  `json:"id"`
+	ExternalID       string  `json:"external_id"`
+	Amount           float64 `json:"amount"`
+	PassCode         string  `json:"passcode"`
+	MerchantName     string  `json:"merchant_name"`
+	Status           string  `json:"status"`
+	ExpiredTimestamp string  `json:"expiration_timestamp"`
+	CreatedTimestamp string  `json:"created"`
+	PayoutURL        string  `json:"payout_url,omitempty"`
+	XenditErrorResponse
+}

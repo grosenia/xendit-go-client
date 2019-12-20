@@ -19,3 +19,9 @@ type XenditCreateFixedVaReq struct {
 	Name                 string `json:"name"`
 	VirtualAccountNumber string `json:"virtual_account_number,omitempty"`
 }
+
+// XenditCreatePayoutReq is JSON request for Payout feature
+type XenditCreatePayoutReq struct {
+	ExternalID string  `json:"external_id"`
+	Amount     float64 `json:"amount"`
+}
