@@ -25,3 +25,17 @@ type XenditCreatePayoutReq struct {
 	ExternalID string  `json:"external_id"`
 	Amount     float64 `json:"amount"`
 }
+
+type XenditCreateBatchReq struct {
+	HeaderID      string             `json:"reference"`
+	Disbursements []DisbursementItem `json:"disbursements"`
+}
+
+type DisbursementItem struct {
+	Amount            float64 `json:"amount"`
+	ExternalID        string  `json:"external_id"`
+	BankCode          string  `json:"bank_code"`
+	BankAccountName   string  `json:"bank_account_name"`
+	BankAccountNumber string  `json:"bank_account_number"`
+	Description       string  `json:"description"`
+}

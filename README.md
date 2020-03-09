@@ -7,6 +7,11 @@ This is the package in Go language to communicate with Xendit
 ## Supported features:
 - Creating Invoice
 - Creating Fixed VA
+- Payout
+  - Create Payout
+  - Void Payout
+  - Get Payout
+- Create Batch Disbursement
  
 ## Code Snippets:
 - Sample code to handling payment notifications (coming soon)

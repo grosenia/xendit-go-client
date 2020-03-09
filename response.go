@@ -106,3 +106,13 @@ type XenditCreatePayoutResp struct {
 	PayoutURL        string  `json:"payout_url,omitempty"`
 	XenditErrorResponse
 }
+
+type XenditCreateBatchResp struct {
+	Created             string `json:"created"`
+	Reference           string `json:"reference"`
+	TotalUpdatedCount   int64  `json:"total_uploaded_count"`
+	TotalUploadedAmount int64  `json:"total_uploaded_amount"`
+	Status              string `json:"status"`
+	ID                  string `json:"id"`
+	XenditErrorResponse
+}
