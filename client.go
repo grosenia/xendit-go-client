@@ -15,6 +15,7 @@ import (
 type Client struct {
 	APIEnvType               EnvironmentType
 	SecretAPIKey             string
+	ApiVersion               string
 	InvoiceDurationInSeconds int
 
 	LogLevel int
@@ -30,7 +31,7 @@ func NewClient() Client {
 		// 1: Errors only
 		// 2: Errors + informational (default)
 		// 3: Errors + informational + debug
-		LogLevel: 2,
+		LogLevel: 3,
 	}
 }
 
@@ -54,6 +55,7 @@ func (c *Client) NewRequest(method string, fullPath string, body io.Reader) (*ht
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 	req.SetBasicAuth(c.SecretAPIKey, "")
+	req.Header.Add("api-version", c.ApiVersion)
 
 	return req, nil
 }
