@@ -32,7 +32,7 @@ func (gateway *QrcodeGateway) CreateQrCode(req *XenditCreteQrcodeReq) (*XenditQr
 		return nil, err
 	}
 
-	if httpStatus != 200 {
+	if httpStatus != 201 {
 		resp.ErrorStatus = true
 	} else {
 		resp.ErrorStatus = false
