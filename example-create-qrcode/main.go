@@ -19,7 +19,10 @@ func main() {
 	viper.SetConfigType("props")
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
-
+	t := time.Now()
+	tCal := t.Add(time.Hour * 10)
+	fmt.Println("Before add " + t.UTC().Format(time.RFC3339))
+	fmt.Println("After add " + tCal.UTC().Format(time.RFC3339))
 	err := viper.ReadInConfig()
 	if err != nil { // Handle errors reading the config file
 		panic(fmt.Errorf("fatal error config file: %s", err))
@@ -30,11 +33,11 @@ func main() {
 	setupClient()
 
 	// Example
-	referenceId := "ORDER_15263"
+	referenceId := "DGRO/20231201/000005"
 	typeQr := "DYNAMIC"
 	currency := "IDR"
-	amount := 256421.00
-	expiresAt := "2023-12-02T09:56:43.60445Z"
+	amount := 683000.00
+	expiresAt := "2023-12-02T03:49:02Z"
 	// shouldExcludeCreditCard := true
 
 	fmt.Println("Generated Order ID: " + referenceId)
