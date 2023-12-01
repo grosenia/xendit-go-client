@@ -28,7 +28,7 @@ func (gateway *QrcodeGateway) CreateQrCode(req *XenditCreteQrcodeReq) (*XenditQr
 
 	httpStatus, err := gateway.Client.ExecuteRequest(httpRequest, &resp)
 	if err != nil {
-		log.Error("Error charging ", err)
+		log.Error("Error charging :", err)
 		return nil, err
 	}
 
