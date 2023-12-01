@@ -116,3 +116,43 @@ type XenditCreateBatchResp struct {
 	ID                  string `json:"id"`
 	XenditErrorResponse
 }
+
+type XenditQrCodeResp struct {
+	Id              string         `json:"id"`
+	ReferenceId     string         `json:"reference_id"`
+	BusinessId      string         `json:"business_id"`
+	Type            string         `json:"type"`
+	Currency        string         `json:"currency"`
+	Amount          float64        `json:"amount"`
+	ChannelCode     string         `json:"channel_code"`
+	Status          string         `json:"status"`
+	QrString        string         `json:"qr_string"`
+	Description     string         `json:"description"`
+	ExpiryDate      string         `json:"expires_at"`
+	CreatedDateTime string         `json:"created"`
+	UpdatedDateTime string         `json:"updated" `
+	Basket          []BasketQrCode `json:"basket"`
+	PaymentDetails
+
+	XenditErrorResponse
+}
+
+type BasketQrCode struct {
+	ReferenceId string  `json:"reference_id"`
+	name        string  `json:"name"`
+	Category    string  `json:"category"`
+	Currency    string  `json:"currency"`
+	Price       float64 `json:"price"`
+	Quantity    float64 `json:"quantity"`
+	Type        string  `json:"type"`
+	Url         string  `json:"url"`
+	Description string  `json:"description"`
+	SubCategory string  `json:"sub-category"`
+}
+
+type PaymentDetails struct {
+	ReceiptId     string `json:"reference_id"`
+	Source        string `json:"source"`
+	Name          string `json:"name"`
+	AccountDetail string `json:"account_details"`
+}

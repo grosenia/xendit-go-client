@@ -36,3 +36,12 @@ type XenditFixedVaCreatedNotification struct {
 	CreatedDateTime string `json:"created_datetime"`
 	UpdatedDateTime string `json:"updated_datetime"`
 }
+
+// XenditQrCodeCallback is standard callback when payment
+type XenditQrCodeCallback struct {
+	Event           string             `json:"event"`
+	ApiVersion      string             `json:"api_version"`
+	BusinessId      string             `json:"business_id"`
+	CreatedDateTime string             `json:"created"`
+	Data            []XenditQrCodeResp `json:"data"`
+}

@@ -39,3 +39,12 @@ type DisbursementItem struct {
 	BankAccountNumber string  `json:"bank_account_number"`
 	Description       string  `json:"description"`
 }
+
+type XenditCreteQrcodeReq struct {
+	ReferenceId string  `json:"reference_id"`
+	Amount      float64 `json:"amount"`
+	Type        string  `json:"type"`
+	ExpiredAt   string  `json:"expires_at"`
+	Currency    string  `json:"currency"`
+}
+

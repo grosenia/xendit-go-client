@@ -1,0 +1,10 @@
+APP_NAME=xendit-intgr
+APP_DEBUG=false
+KEY_WRITE_MONEY_IN=
+API_VERSION = 2022-07-31
+KEY_READ_MONEY_IN=xnd_development_xxx
+KEY_READ_ALL_IN=xnd_development_xxx
+INVOICE_DURATION=86400
+
+# Testing Only
+SAMPLE_VA_ACCOUNT_ID=xxx
