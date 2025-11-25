@@ -156,3 +156,21 @@ type PaymentDetails struct {
 	Name          string `json:"name"`
 	AccountDetail string `json:"account_details"`
 }
+
+type XenditPaymentMethodResp struct {
+	ID                string                               `json:"id"`
+	ReferenceID       string                               `json:"reference_id"`
+	Type              string                               `json:"type"`
+	Reusability       string                               `json:"reusability"`
+	Status            string                               `json:"status"`
+	Country           string                               `json:"country"`
+	Currency          string                               `json:"currency"`
+	ChannelCode       string                               `json:"channel_code"`
+	ChannelProperties XenditPaymentMethodChannelProperties `json:"channel_properties"`
+	CustomerID        string                               `json:"customer_id"`
+	Description       string                               `json:"description"`
+	Created           string                               `json:"created"`
+	Updated           string                               `json:"updated"`
+
+	XenditErrorResponse
+}
