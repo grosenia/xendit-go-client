@@ -142,3 +142,58 @@ func (gateway *InvoiceGateway) CreatePaymentMethod(req *XenditCreatePaymentMetho
 
 	return &resp, nil
 }
+
+// ExpireInvoice expires an invoice by invoice ID
+// Endpoint: POST https://api.xendit.co/invoices/{invoice_id}/expire!
+// According to Xendit docs, the endpoint is /invoices/{invoice_id}/expire! (with !, without /v2/)
+// We'll try the documented endpoint first, then fallback to v2 if needed
+func (gateway *InvoiceGateway) ExpireInvoice(invoiceID string) (*XenditCreateInvoiceResp, error) {
+	resp := XenditCreateInvoiceResp{}
+	log := clog.Get()
+
+	// Try endpoint exactly as per Xendit documentation: /invoices/{invoice_id}/expire! (with !)
+	// Note: This is different from other invoice APIs which use /v2/invoices
+	path := gateway.Client.APIEnvType.String() + "/invoices/" + invoiceID + "/expire!"
+
+	if gateway.Client.LogLevel > 1 {
+		// keep minimal visibility when log level > info
+		log.Infof("ExpireInvoice: POST %s invoiceID=%s", path, invoiceID)
+	}
+
+	httpRequest, err := gateway.Client.NewRequest("POST", path, nil)
+	if err != nil {
+		log.Errorf("ExpireInvoice: Failed to create request for invoice ID: %s, error: %v", invoiceID, err)
+		return nil, err
+	}
+
+	httpStatus, err := gateway.Client.ExecuteRequest(httpRequest, &resp)
+	if err != nil {
+		log.Errorf("ExpireInvoice: ExecuteRequest failed for invoice ID: %s, error: %v", invoiceID, err)
+		return nil, err
+	}
+
+	// If endpoint with ! returns 404, try v2 endpoint (for consistency with other invoice APIs)
+	if httpStatus == 404 {
+		log.Warnf("ExpireInvoice: endpoint with ! returned 404, trying v2 endpoint for invoice ID: %s", invoiceID)
+		pathV2 := gateway.Client.APIEnvType.String() + "/v2/invoices/" + invoiceID + "/expire"
+		httpRequestV2, errV2 := gateway.Client.NewRequest("POST", pathV2, nil)
+		if errV2 == nil {
+			httpStatus, err = gateway.Client.ExecuteRequest(httpRequestV2, &resp)
+			if err != nil {
+				log.Errorf("ExpireInvoice: v2 ExecuteRequest also failed for invoice ID: %s, error: %v", invoiceID, err)
+				return nil, err
+			}
+		}
+	}
+
+	// Accept both 200 (OK) and 204 (No Content) as success status codes
+	// Some APIs return 204 for successful operations without response body
+	if httpStatus != 200 && httpStatus != 204 {
+		resp.ErrorStatus = true
+		log.Warnf("ExpireInvoice: non-success status %d for invoice ID: %s, response: %+v", httpStatus, invoiceID, resp)
+	} else {
+		resp.ErrorStatus = false
+	}
+
+	return &resp, nil
+}

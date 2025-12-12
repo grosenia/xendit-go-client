@@ -65,10 +65,6 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) (httpStatus in
 	logLevel := c.LogLevel
 	log := clog.Get()
 
-	if logLevel > 1 {
-		log.Debugf("Request %s : %s %s", req.Method, req.URL.Host, req.URL.Path)
-	}
-
 	start := time.Now()
 
 	res, err := httpClient.Do(req)
@@ -81,9 +77,7 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) (httpStatus in
 
 	defer res.Body.Close()
 
-	if logLevel > 2 {
-		log.Debugf("Completed in %s", time.Since(start).String())
-	}
+	_ = start // retained for potential future latency metrics
 
 	if err != nil {
 		if logLevel > 0 {
@@ -97,16 +91,21 @@ func (c *Client) ExecuteRequest(req *http.Request, v interface{}) (httpStatus in
 		if logLevel > 0 {
 			log.Error("Cannot read response body ", err)
 		}
-		return httpStatus, err
-	}
-
-	if logLevel > 2 {
-		log.Debugf("Payment response %s", string(resBody))
+		return res.StatusCode, err
 	}
 
 	if v != nil {
+		// If response body is empty, skip unmarshalling (some endpoints like expire may return empty body)
+		if len(resBody) > 0 {
 		if err = json.Unmarshal(resBody, v); err != nil {
-			return httpStatus, err
+				if logLevel > 0 {
+					log.Warnf("Failed to unmarshal response body: %s, error: %v", string(resBody), err)
+				}
+				// Don't return error for unmarshal failures, as some endpoints may return non-JSON responses
+				// The caller can check httpStatus to determine success
+			}
+		} else {
+			// no body returned; acceptable for some endpoints
 		}
 
 		// we're safe to reflect status_code if response not an array

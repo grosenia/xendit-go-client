@@ -139,7 +139,7 @@ type XenditQrCodeResp struct {
 
 type BasketQrCode struct {
 	ReferenceId string  `json:"reference_id"`
-	name        string  `json:"name"`
+	Name        string  `json:"name"`
 	Category    string  `json:"category"`
 	Currency    string  `json:"currency"`
 	Price       float64 `json:"price"`
