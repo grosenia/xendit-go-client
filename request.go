@@ -14,10 +14,22 @@ type XenditCreateInvoiceReq struct {
 
 // XenditCreateFixedVaReq  is JSON request to be sent to Xendit to create Callback Fixed VA
 type XenditCreateFixedVaReq struct {
-	ExternalID           string `json:"external_id"`
-	BankCode             string `json:"bank_code"`
-	Name                 string `json:"name"`
-	VirtualAccountNumber string `json:"virtual_account_number,omitempty"`
+	ExternalID           string  `json:"external_id"`
+	BankCode             string  `json:"bank_code"`
+	Name                 string  `json:"name"`
+	VirtualAccountNumber string  `json:"virtual_account_number,omitempty"`
+	IsClosed             *bool   `json:"is_closed,omitempty"`
+	ExpectedAmount       float64 `json:"expected_amount,omitempty"`
+	IsSingleUse          *bool   `json:"is_single_use,omitempty"`
+}
+
+type XenditUpdateFixedVaReq struct {
+	Name                 string  `json:"name,omitempty"`
+	ExpectedAmount       float64 `json:"expected_amount,omitempty"`
+	IsClosed             *bool   `json:"is_closed,omitempty"`
+	IsSingleUse          *bool   `json:"is_single_use,omitempty"`
+	ExpirationDate       string  `json:"expiration_date,omitempty"`
+	VirtualAccountNumber string  `json:"virtual_account_number,omitempty"`
 }
 
 // XenditCreatePayoutReq is JSON request for Payout feature
@@ -48,3 +60,34 @@ type XenditCreteQrcodeReq struct {
 	Currency    string  `json:"currency"`
 }
 
+type XenditCreatePaymentMethodReq struct {
+	ReferenceID       string                               `json:"reference_id"`
+	Type              string                               `json:"type"`
+	Reusability       string                               `json:"reusability"`
+	Country           string                               `json:"country"`
+	Currency          string                               `json:"currency"`
+	ChannelCode       string                               `json:"channel_code"`
+	ChannelProperties XenditPaymentMethodChannelProperties `json:"channel_properties"`
+	Metadata          map[string]interface{}               `json:"metadata,omitempty"`
+	CustomerID        string                               `json:"customer_id,omitempty"`
+	Description       string                               `json:"description,omitempty"`
+}
+
+type XenditPaymentMethodChannelProperties struct {
+	ExpiresAt            string                               `json:"expires_at,omitempty"`
+	DisplayName          string                               `json:"display_name,omitempty"`
+	VerificationData     *XenditPaymentMethodVerificationData `json:"verification_data,omitempty"`
+	VirtualAccountNumber string                               `json:"virtual_account_number,omitempty"`
+}
+
+type XenditPaymentMethodVerificationData struct {
+	CustomerName           string                                  `json:"customer_name"`
+	AcceptedNameVariations []string                                `json:"accepted_name_variations,omitempty"`
+	AllowedBankAccounts    []XenditPaymentMethodAllowedBankAccount `json:"allowed_bank_accounts,omitempty"`
+}
+
+type XenditPaymentMethodAllowedBankAccount struct {
+	BankName      string `json:"bank_name"`
+	AccountNumber string `json:"account_number"`
+	AccountName   string `json:"account_name"`
+}

@@ -139,7 +139,7 @@ type XenditQrCodeResp struct {
 
 type BasketQrCode struct {
 	ReferenceId string  `json:"reference_id"`
-	name        string  `json:"name"`
+	Name        string  `json:"name"`
 	Category    string  `json:"category"`
 	Currency    string  `json:"currency"`
 	Price       float64 `json:"price"`
@@ -155,4 +155,22 @@ type PaymentDetails struct {
 	Source        string `json:"source"`
 	Name          string `json:"name"`
 	AccountDetail string `json:"account_details"`
+}
+
+type XenditPaymentMethodResp struct {
+	ID                string                               `json:"id"`
+	ReferenceID       string                               `json:"reference_id"`
+	Type              string                               `json:"type"`
+	Reusability       string                               `json:"reusability"`
+	Status            string                               `json:"status"`
+	Country           string                               `json:"country"`
+	Currency          string                               `json:"currency"`
+	ChannelCode       string                               `json:"channel_code"`
+	ChannelProperties XenditPaymentMethodChannelProperties `json:"channel_properties"`
+	CustomerID        string                               `json:"customer_id"`
+	Description       string                               `json:"description"`
+	Created           string                               `json:"created"`
+	Updated           string                               `json:"updated"`
+
+	XenditErrorResponse
 }
