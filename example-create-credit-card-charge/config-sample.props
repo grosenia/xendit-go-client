@@ -1,0 +1,18 @@
+APP_NAME=xendit-intgr
+APP_DEBUG=false
+
+# Secret key — used server-side for POST /credit_card_charges
+KEY_WRITE_MONEY_IN=xnd_development_xxx
+
+# Public key — used in tokenize.html only (never send to charge API)
+PUBLIC_API_KEY=xnd_public_development_xxx
+
+# Must match the amount passed to Xendit.card.createToken()
+CHARGE_AMOUNT=100000
+
+# Fill after running tokenize.html in sandbox
+TOKEN_ID=
+AUTHENTICATION_ID=
+
+# Optional — auto-generated if empty
+EXTERNAL_ID=
