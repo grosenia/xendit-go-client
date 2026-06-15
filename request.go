@@ -91,3 +91,12 @@ type XenditPaymentMethodAllowedBankAccount struct {
 	AccountNumber string `json:"account_number"`
 	AccountName   string `json:"account_name"`
 }
+
+// XenditCreateCreditCardChargeReq is JSON request for credit card charge API.
+type XenditCreateCreditCardChargeReq struct {
+	TokenID          string  `json:"token_id"`
+	ExternalID       string  `json:"external_id"`
+	Amount           float64 `json:"amount"`
+	AuthenticationID string  `json:"authentication_id,omitempty"`
+	Capture          bool    `json:"capture"`
+}

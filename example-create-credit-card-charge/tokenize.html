@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xendit CC Tokenize (Sandbox)</title>
+  <script src="https://js.xendit.co/v1/xendit.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: 0.75rem; font-weight: 600; }
+    input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box; }
+    button { margin-top: 1rem; padding: 0.6rem 1rem; cursor: pointer; }
+    pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; white-space: pre-wrap; }
+    .hint { color: #555; font-size: 0.9rem; }
+    .warn { background: #fff8e1; border: 1px solid #ffe082; padding: 0.75rem; margin-top: 1rem; }
+    a.button { display: inline-block; margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: #1976d2; color: #fff; text-decoration: none; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Generate token_id (Sandbox)</h1>
+  <p class="hint">
+    Open this file in a browser, paste your <strong>public API key</strong>, then create a token.
+    Copy <code>token_id</code> and <code>authentication_id</code> into <code>config.props</code>
+    before running <code>main.go</code>.
+  </p>
+
+  <label for="publicKey">Public API Key</label>
+  <input id="publicKey" type="text" placeholder="xnd_public_development_...">
+
+  <label for="amount">Amount (must match CHARGE_AMOUNT)</label>
+  <input id="amount" type="number" value="100000">
+
+  <label for="cardNumber">Card Number</label>
+  <input id="cardNumber" type="text" value="4000000000001091">
+  <p class="hint">Sandbox 3DS test card: 4000000000001091</p>
+
+  <label for="firstName">Cardholder First Name</label>
+  <input id="firstName" type="text" value="John">
+
+  <label for="lastName">Cardholder Last Name</label>
+  <input id="lastName" type="text" value="Doe">
+
+  <label for="email">Cardholder Email</label>
+  <input id="email" type="email" value="test@grosenia.co.id">
+
+  <label for="phone">Cardholder Phone</label>
+  <input id="phone" type="text" value="+6281234567890">
+
+  <label for="expMonth">Exp Month</label>
+  <input id="expMonth" type="text" value="12">
+
+  <label for="expYear">Exp Year</label>
+  <input id="expYear" type="text" value="2027">
+
+  <label for="cvn">CVN</label>
+  <input id="cvn" type="text" value="123">
+
+  <button id="createToken">Create Token</button>
+
+  <h2>Result</h2>
+  <div id="reviewNotice" class="warn" style="display:none;">
+    Status <strong>IN_REVIEW</strong> — selesaikan 3DS dulu lewat link di bawah,
+    lalu create token lagi atau tunggu popup selesai.
+  </div>
+  <div id="authLink"></div>
+  <pre id="result">—</pre>
+
+  <script>
+    document.getElementById('createToken').addEventListener('click', function () {
+      var publicKey = document.getElementById('publicKey').value.trim();
+      if (!publicKey) {
+        document.getElementById('result').textContent = 'Public API key is required.';
+        return;
+      }
+
+      Xendit.setPublishableKey(publicKey);
+
+      var amount = Number(document.getElementById('amount').value);
+      var payload = {
+        amount: amount,
+        card_number: document.getElementById('cardNumber').value.trim(),
+        card_exp_month: document.getElementById('expMonth').value.trim(),
+        card_exp_year: document.getElementById('expYear').value.trim(),
+        card_cvn: document.getElementById('cvn').value.trim(),
+        card_holder_first_name: document.getElementById('firstName').value.trim(),
+        card_holder_last_name: document.getElementById('lastName').value.trim(),
+        card_holder_email: document.getElementById('email').value.trim(),
+        card_holder_phone_number: document.getElementById('phone').value.trim(),
+        should_authenticate: true,
+        on_behalf_of: null
+      };
+
+      document.getElementById('result').textContent = 'Creating token...';
+      document.getElementById('reviewNotice').style.display = 'none';
+      document.getElementById('authLink').innerHTML = '';
+
+      Xendit.card.createToken(payload, function (err, creditCardToken) {
+        if (err) {
+          document.getElementById('result').textContent = JSON.stringify(err, null, 2);
+          return;
+        }
+
+        var output = {
+          token_id: creditCardToken.id,
+          authentication_id: creditCardToken.authentication_id || '',
+          status: creditCardToken.status,
+          masked_card_number: creditCardToken.masked_card_number,
+          payer_authentication_url: creditCardToken.payer_authentication_url || ''
+        };
+
+        if (creditCardToken.status === 'IN_REVIEW' && creditCardToken.payer_authentication_url) {
+          document.getElementById('reviewNotice').style.display = 'block';
+          document.getElementById('authLink').innerHTML =
+            '<a class="button" target="_blank" rel="noopener" href="' +
+            creditCardToken.payer_authentication_url +
+            '">Buka halaman 3DS</a>';
+          window.open(creditCardToken.payer_authentication_url, '_blank');
+        }
+
+        document.getElementById('result').textContent = JSON.stringify(output, null, 2);
+      });
+    });
+  </script>
+</body>
+</html>

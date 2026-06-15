@@ -174,3 +174,18 @@ type XenditPaymentMethodResp struct {
 
 	XenditErrorResponse
 }
+
+// XenditCreateCreditCardChargeResp is JSON response from credit card charge API.
+type XenditCreateCreditCardChargeResp struct {
+	ID                     string  `json:"id"`
+	ExternalID             string  `json:"external_id"`
+	Status                 string  `json:"status"`
+	AuthorizedAmount       float64 `json:"authorized_amount"`
+	CapturedAmount         float64 `json:"captured_amount"`
+	PayerAuthenticationURL string  `json:"payer_authentication_url"`
+	FailureReason          string  `json:"failure_reason"`
+	Created                string  `json:"created"`
+	Updated                string  `json:"updated"`
+
+	XenditErrorResponse
+}

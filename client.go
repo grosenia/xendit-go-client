@@ -16,6 +16,7 @@ type Client struct {
 	APIEnvType               EnvironmentType
 	SecretAPIKey             string
 	ApiVersion               string
+	PaymentsAPIVersion       string
 	InvoiceDurationInSeconds int
 
 	LogLevel int
@@ -56,6 +57,26 @@ func (c *Client) NewRequest(method string, fullPath string, body io.Reader) (*ht
 	req.Header.Add("Accept", "application/json")
 	req.SetBasicAuth(c.SecretAPIKey, "")
 	req.Header.Add("api-version", c.ApiVersion)
+
+	return req, nil
+}
+
+// NewRequestWithoutAPIVersion is for Customer API and other endpoints that reject legacy api-version headers.
+func (c *Client) NewRequestWithoutAPIVersion(method string, fullPath string, body io.Reader) (*http.Request, error) {
+	logLevel := c.LogLevel
+	log := clog.Get()
+
+	req, err := http.NewRequest(method, fullPath, body)
+	if err != nil {
+		if logLevel > 0 {
+			log.Error("Request creation failed ", err)
+		}
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	req.SetBasicAuth(c.SecretAPIKey, "")
 
 	return req, nil
 }
