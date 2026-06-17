@@ -26,7 +26,21 @@ This is the package in Go language to communicate with Xendit
 - `example-create-fixedva`
 - `example-create-credit-card-charge` — legacy v2: tokenize via `tokenize.html`, then charge with `main.go`
 
-### Payments API v3 (Saved Card)
+### Payments API v3 (package terpisah)
+
+Semua kode, constant, test, docs, dan examples v3 ada di folder **[`v3/`](./v3/)**:
+
+```go
+import xenditv3 "github.com/grosenia/xendit-go-client/v3"
+```
+
+- Docs: [`v3/README.md`](./v3/README.md)
+- Examples: [`v3/examples/`](./v3/examples/)
+- Tests: `go test ./v3`
+
+Root package `xenditgo` juga masih punya v3 methods (legacy integrasi core-api). Untuk project baru, pakai `v3/` saja.
+
+### Payments API v3 (root `xenditgo` — existing)
 
 Set `client.ApiVersion = xenditgo.PaymentsAPIVersion` (default `2024-11-11` if empty).
 
