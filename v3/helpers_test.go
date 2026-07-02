@@ -66,3 +66,31 @@ func TestPresentToCustomerValue(t *testing.T) {
 	}
 	is.Equal("va-payload", resp.PresentToCustomerValue())
 }
+
+func TestBuildPoolVARequest(t *testing.T) {
+	is := is.New(t)
+
+	req, err := BuildPoolVARequest(PoolVARequest{
+		ReferenceID: "ORD-POOL-1",
+		BankCode:    "BCA",
+		Amount:      93560,
+		DisplayName: "Grosenia Niaga Indonesia",
+		Description: "Test order",
+	})
+	is.NoErr(err)
+	is.Equal(PaymentRequestTypePay, req.Type)
+	is.Equal(ChannelCodeBCAVirtualAccount, req.ChannelCode)
+	is.Equal(93560.0, req.RequestAmount)
+	is.Equal("Grosenia Niaga Indonesia", req.ChannelProperties.DisplayName)
+}
+
+func TestVirtualAccountNumber(t *testing.T) {
+	is := is.New(t)
+
+	resp := PaymentRequestResponse{
+		Actions: []PaymentRequestAction{
+			{Type: "PRESENT_TO_CUSTOMER", Descriptor: "VIRTUAL_ACCOUNT_NUMBER", Value: "8812345678"},
+		},
+	}
+	is.Equal("8812345678", resp.VirtualAccountNumber())
+}

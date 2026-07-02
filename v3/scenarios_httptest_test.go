@@ -129,6 +129,30 @@ func TestScenario02_PaymentLink_Fail_InvalidAmount(t *testing.T) {
 	is.Equal("API_VALIDATION_ERROR", session.ErrorCode)
 }
 
+func TestScenario02b_PoolVA_Success(t *testing.T) {
+	is := is.New(t)
+	gw := mockGateway(t, func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body)
+		var req CreatePaymentRequestRequest
+		is.NoErr(json.Unmarshal(body, &req))
+		is.Equal(PaymentRequestTypePay, req.Type)
+		is.Equal(ChannelCodeBCAVirtualAccount, req.ChannelCode)
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte(`{"payment_request_id":"pr-pool","status":"REQUIRES_ACTION","channel_properties":{"display_name":"Grosenia Niaga Indonesia"},"actions":[{"type":"PRESENT_TO_CUSTOMER","descriptor":"VIRTUAL_ACCOUNT_NUMBER","value":"8808123456789"}]}`))
+	})
+
+	pr, err := gw.CreatePoolVirtualAccount(&PoolVARequest{
+		ReferenceID: "ORD-POOL-1",
+		BankCode:    "BCA",
+		Amount:      93560,
+		DisplayName: "Grosenia Niaga Indonesia",
+	})
+	is.NoErr(err)
+	is.True(!pr.ErrorStatus)
+	is.Equal("pr-pool", pr.PaymentRequestID)
+	is.Equal("8808123456789", pr.VirtualAccountNumber())
+}
+
 func TestScenario03_ReusableVA_Success(t *testing.T) {
 	is := is.New(t)
 	gw := mockGateway(t, func(w http.ResponseWriter, r *http.Request) {

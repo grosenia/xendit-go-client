@@ -150,3 +150,30 @@ func (r *PaymentRequestResponse) PresentToCustomerValue() string {
 	}
 	return ""
 }
+
+// VirtualAccountNumber returns pool/fixed VA number from payment request actions.
+func (r *PaymentRequestResponse) VirtualAccountNumber() string {
+	if r == nil {
+		return ""
+	}
+	for _, action := range r.Actions {
+		if action.Type != "PRESENT_TO_CUSTOMER" {
+			continue
+		}
+		descriptor := strings.ToUpper(strings.TrimSpace(action.Descriptor))
+		if descriptor == "" || descriptor == "VIRTUAL_ACCOUNT_NUMBER" {
+			if va := strings.TrimSpace(action.Value); va != "" {
+				return va
+			}
+		}
+	}
+	return ""
+}
+
+// DisplayName returns customer-facing VA holder name from channel properties.
+func (r *PaymentRequestResponse) DisplayName() string {
+	if r == nil || r.ChannelProperties == nil {
+		return ""
+	}
+	return strings.TrimSpace(r.ChannelProperties.DisplayName)
+}

@@ -122,6 +122,50 @@ func BuildPaymentLinkSessionRequest(in PaymentLinkSessionRequest) (*CreatePaymen
 	return req, nil
 }
 
+// PoolVARequest is input for CreatePoolVirtualAccount (one-time pool VA, replaces legacy invoice POOL).
+type PoolVARequest struct {
+	ReferenceID        string
+	BankCode           string // legacy BCA / BRI / … or full channel_code
+	Amount             float64
+	DisplayName        string
+	Description        string
+	InvoiceDurationSec int
+}
+
+// BuildPoolVARequest maps legacy pool VA checkout to POST /v3/payment_requests type PAY.
+func BuildPoolVARequest(in PoolVARequest) (*CreatePaymentRequestRequest, error) {
+	channel, err := MapLegacyBankCode(in.BankCode)
+	if err != nil {
+		return nil, err
+	}
+	expiresAt := time.Now().UTC().Add(time.Duration(poolVAExpiresSec(in.InvoiceDurationSec)) * time.Second).Format(time.RFC3339)
+	displayName := strings.TrimSpace(in.DisplayName)
+	if displayName == "" {
+		displayName = "Grosenia Niaga Indonesia"
+	}
+	return &CreatePaymentRequestRequest{
+		ReferenceID:   strings.TrimSpace(in.ReferenceID),
+		Type:          PaymentRequestTypePay,
+		Country:       "ID",
+		Currency:      "IDR",
+		RequestAmount: in.Amount,
+		ChannelCode:   channel,
+		CaptureMethod: CaptureMethodAutomatic,
+		Description:   strings.TrimSpace(in.Description),
+		ChannelProperties: &PaymentRequestChannelProperties{
+			ExpiresAt:   expiresAt,
+			DisplayName: displayName,
+		},
+	}, nil
+}
+
+func poolVAExpiresSec(invoiceDurationSec int) int {
+	if invoiceDurationSec <= 0 {
+		return 604800
+	}
+	return invoiceDurationSec
+}
+
 // ReusableVARequest is input for CreateReusableVirtualAccount (replaces legacy fixed VA).
 type ReusableVARequest struct {
 	ReferenceID          string
