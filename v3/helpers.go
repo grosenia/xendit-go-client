@@ -47,19 +47,19 @@ func MapLegacyPaymentMethods(methods []string) ([]string, error) {
 
 // PaymentLinkSessionRequest is input for CreatePaymentLinkSession (replaces legacy invoice).
 type PaymentLinkSessionRequest struct {
-	ReferenceID    string
-	Amount         float64
-	Currency       string
-	Country        string
-	PayerEmail     string
-	Description    string
-	ExpiresAt      string
+	ReferenceID        string
+	Amount             float64
+	Currency           string
+	Country            string
+	PayerEmail         string
+	Description        string
+	ExpiresAt          string
 	InvoiceDurationSec int
-	PaymentMethods []string // legacy: BCA, MANDIRI, …
-	CustomerID     string
-	Customer       *SessionCustomer
-	SuccessReturnURL string
-	FailureReturnURL string
+	PaymentMethods     []string // legacy: BCA, MANDIRI, …
+	CustomerID         string
+	Customer           *SessionCustomer
+	SuccessReturnURL   string
+	FailureReturnURL   string
 }
 
 func (r PaymentLinkSessionRequest) expiresAtRFC3339() string {
@@ -174,6 +174,16 @@ type ReusableVARequest struct {
 	ExpiresAt            string
 	ExpectedAmount       float64
 	VirtualAccountNumber string
+	// Verification — wajib untuk BRI_VIRTUAL_ACCOUNT sejak Aug 2025. Opsional untuk channel lain.
+	// Ref: https://docs.xendit.co/docs/bri-virtual-account
+	Verification *ReusableVAVerification
+}
+
+// ReusableVAVerification — verifikasi identitas pengirim (mis. wajib untuk BRI VA).
+type ReusableVAVerification struct {
+	CustomerName           string
+	AcceptedNameVariations []string
+	AllowedBankAccounts    []PaymentRequestBankAccount
 }
 
 // BuildReusableVARequest maps legacy fixed VA to POST /v3/payment_requests REUSABLE_PAYMENT_CODE.
@@ -191,19 +201,27 @@ func BuildReusableVARequest(in ReusableVARequest) (*CreatePaymentRequestRequest,
 		DisplayName: strings.TrimSpace(in.DisplayName),
 	}
 	if in.VirtualAccountNumber != "" {
+		props.VirtualAccountNumber = strings.TrimSpace(in.VirtualAccountNumber)
 		props.ReusablePaymentCode = &ReusablePaymentCodeChannelProperties{
 			DisplayName: props.DisplayName,
 			ExpiresAt:   expiresAt,
 		}
 	}
+	if in.Verification != nil {
+		props.VerificationData = &PaymentRequestVerificationData{
+			CustomerName:           strings.TrimSpace(in.Verification.CustomerName),
+			AcceptedNameVariations: in.Verification.AcceptedNameVariations,
+			AllowedBankAccounts:    in.Verification.AllowedBankAccounts,
+		}
+	}
 
 	req := &CreatePaymentRequestRequest{
-		ReferenceID:   in.ReferenceID,
-		Type:          PaymentRequestTypeReusablePaymentCode,
-		Country:       "ID",
-		Currency:      "IDR",
-		RequestAmount: in.ExpectedAmount,
-		ChannelCode:   channel,
+		ReferenceID:       in.ReferenceID,
+		Type:              PaymentRequestTypeReusablePaymentCode,
+		Country:           "ID",
+		Currency:          "IDR",
+		RequestAmount:     in.ExpectedAmount,
+		ChannelCode:       channel,
 		ChannelProperties: props,
 	}
 	return req, nil

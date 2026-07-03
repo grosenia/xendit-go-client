@@ -51,6 +51,31 @@ func TestBuildReusableVARequest(t *testing.T) {
 	is.Equal(PaymentRequestTypeReusablePaymentCode, req.Type)
 	is.Equal(ChannelCodeBCAVirtualAccount, req.ChannelCode)
 	is.Equal("Toko ABC", req.ChannelProperties.DisplayName)
+	is.True(req.ChannelProperties.VerificationData == nil)
+}
+
+func TestBuildReusableVARequest_WithVerificationData(t *testing.T) {
+	is := is.New(t)
+
+	req, err := BuildReusableVARequest(ReusableVARequest{
+		ReferenceID: "seller-1",
+		BankCode:    "BRI",
+		DisplayName: "Toko ABC",
+		Verification: &ReusableVAVerification{
+			CustomerName:           "Toko ABC",
+			AcceptedNameVariations: []string{"Toko A B C", "TOKO ABC"},
+			AllowedBankAccounts: []PaymentRequestBankAccount{
+				{BankName: "BCA", AccountNumber: "1234567890", AccountName: "Toko ABC"},
+			},
+		},
+	})
+	is.NoErr(err)
+	is.Equal(ChannelCodeBRIVirtualAccount, req.ChannelCode)
+	is.True(req.ChannelProperties.VerificationData != nil)
+	is.Equal("Toko ABC", req.ChannelProperties.VerificationData.CustomerName)
+	is.Equal(2, len(req.ChannelProperties.VerificationData.AcceptedNameVariations))
+	is.Equal(1, len(req.ChannelProperties.VerificationData.AllowedBankAccounts))
+	is.Equal("BCA", req.ChannelProperties.VerificationData.AllowedBankAccounts[0].BankName)
 }
 
 func TestPaymentSessionPaymentURL(t *testing.T) {

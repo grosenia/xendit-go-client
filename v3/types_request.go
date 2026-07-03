@@ -12,10 +12,10 @@ type CustomerCreateRequest struct {
 
 // SessionCustomer is customer payload embedded in POST /sessions.
 type SessionCustomer struct {
-	ReferenceID      string                  `json:"reference_id"`
-	Type             string                  `json:"type"`
-	Email            string                  `json:"email,omitempty"`
-	MobileNumber     string                  `json:"mobile_number,omitempty"`
+	ReferenceID      string                   `json:"reference_id"`
+	Type             string                   `json:"type"`
+	Email            string                   `json:"email,omitempty"`
+	MobileNumber     string                   `json:"mobile_number,omitempty"`
 	IndividualDetail *SessionIndividualDetail `json:"individual_detail,omitempty"`
 }
 
@@ -88,16 +88,39 @@ type PaymentRequestCardDetails struct {
 
 // PaymentRequestChannelProperties is channel properties for POST /v3/payment_requests.
 type PaymentRequestChannelProperties struct {
-	SkipThreeDS         *bool                                    `json:"skip_three_ds,omitempty"`
-	CardOnFileType      string                                   `json:"card_on_file_type,omitempty"`
-	TransactionSequence string                                   `json:"transaction_sequence,omitempty"`
-	SuccessReturnURL    string                                   `json:"success_return_url,omitempty"`
-	FailureReturnURL    string                                   `json:"failure_return_url,omitempty"`
-	StatementDescriptor string                                   `json:"statement_descriptor,omitempty"`
-	CardDetails         *PaymentRequestCardDetails               `json:"card_details,omitempty"`
-	ExpiresAt           string                                   `json:"expires_at,omitempty"`
-	DisplayName         string                                   `json:"display_name,omitempty"`
-	ReusablePaymentCode *ReusablePaymentCodeChannelProperties    `json:"reusable_payment_code,omitempty"`
+	SkipThreeDS         *bool                      `json:"skip_three_ds,omitempty"`
+	CardOnFileType      string                     `json:"card_on_file_type,omitempty"`
+	TransactionSequence string                     `json:"transaction_sequence,omitempty"`
+	SuccessReturnURL    string                     `json:"success_return_url,omitempty"`
+	FailureReturnURL    string                     `json:"failure_return_url,omitempty"`
+	StatementDescriptor string                     `json:"statement_descriptor,omitempty"`
+	CardDetails         *PaymentRequestCardDetails `json:"card_details,omitempty"`
+	ExpiresAt           string                     `json:"expires_at,omitempty"`
+	DisplayName         string                     `json:"display_name,omitempty"`
+	// VirtualAccountNumber — custom VA number request (channel harus support "Custom Payment
+	// Code", lihat https://docs.xendit.co/xenpayments/virtual-account/). Xendit menolak dengan
+	// INVALID_VALUE_ERROR "outside of allowed range" kalau prefix/rentang belum di-approve untuk
+	// endpoint ini (dikonfirmasi live, terpisah dari approval range di endpoint legacy).
+	VirtualAccountNumber string                                `json:"virtual_account_number,omitempty"`
+	ReusablePaymentCode  *ReusablePaymentCodeChannelProperties `json:"reusable_payment_code,omitempty"`
+	// VerificationData — wajib untuk BRI_VIRTUAL_ACCOUNT sejak Aug 2025 (verifikasi nama/rekening
+	// pengirim). Referensi: https://docs.xendit.co/docs/bri-virtual-account
+	VerificationData *PaymentRequestVerificationData `json:"verification_data,omitempty"`
+}
+
+// PaymentRequestVerificationData — verifikasi identitas pengirim untuk channel VA yang
+// mewajibkannya (mis. BRI_VIRTUAL_ACCOUNT sejak Aug 2025).
+type PaymentRequestVerificationData struct {
+	CustomerName           string                      `json:"customer_name"`
+	AcceptedNameVariations []string                    `json:"accepted_name_variations,omitempty"`
+	AllowedBankAccounts    []PaymentRequestBankAccount `json:"allowed_bank_accounts,omitempty"`
+}
+
+// PaymentRequestBankAccount — satu entri allowed_bank_accounts di VerificationData.
+type PaymentRequestBankAccount struct {
+	BankName      string `json:"bank_name"`
+	AccountNumber string `json:"account_number"`
+	AccountName   string `json:"account_name"`
 }
 
 // CreatePaymentRequestRequest is JSON for POST /v3/payment_requests.
@@ -113,4 +136,12 @@ type CreatePaymentRequestRequest struct {
 	ChannelProperties *PaymentRequestChannelProperties `json:"channel_properties,omitempty"`
 	Description       string                           `json:"description,omitempty"`
 	Metadata          map[string]interface{}           `json:"metadata,omitempty"`
+}
+
+// UpdatePaymentRequestRequest is JSON for PATCH /v3/payment_requests/{id}. Hanya berlaku saat
+// status REQUIRES_ACTION/ACCEPTING_PAYMENTS. Dikonfirmasi lewat pengujian: request_amount
+// benar-benar ter-update tanpa mengubah nomor VA; field lain di channel_properties (mis.
+// display_name) belum terkonfirmasi ikut ter-update lewat endpoint ini.
+type UpdatePaymentRequestRequest struct {
+	RequestAmount float64 `json:"request_amount,omitempty"`
 }

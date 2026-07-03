@@ -29,6 +29,14 @@ func getPaymentRequestURL(client Client, paymentRequestID string) string {
 	return baseURL(client) + "/v3/payment_requests/" + paymentRequestID
 }
 
+func updatePaymentRequestURL(client Client, paymentRequestID string) string {
+	return baseURL(client) + "/v3/payment_requests/" + paymentRequestID
+}
+
+func cancelPaymentRequestURL(client Client, paymentRequestID string) string {
+	return baseURL(client) + "/v3/payment_requests/" + paymentRequestID + "/cancel"
+}
+
 func getPaymentTokenURL(client Client, paymentTokenID string) string {
 	return baseURL(client) + "/v3/payment_tokens/" + paymentTokenID
 }

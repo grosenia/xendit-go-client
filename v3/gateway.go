@@ -145,6 +145,31 @@ func (g *Gateway) GetPaymentRequest(paymentRequestID string) (*PaymentRequestRes
 	return resp, nil
 }
 
+// UpdatePaymentRequest updates an existing payment request (mis. request_amount) tanpa mengubah
+// nomor VA-nya — dikonfirmasi via Xendit Merchant Support: cara yang benar buat "sync" amount pada
+// reusable VA yang sudah ada, bukan cancel+create ulang. Hanya berlaku saat status
+// REQUIRES_ACTION/ACCEPTING_PAYMENTS.
+func (g *Gateway) UpdatePaymentRequest(paymentRequestID string, req *UpdatePaymentRequestRequest) (*PaymentRequestResponse, error) {
+	resp := &PaymentRequestResponse{}
+	httpStatus, err := g.doPayments("PATCH", updatePaymentRequestURL(g.Client, paymentRequestID), req, resp)
+	if err != nil {
+		return nil, err
+	}
+	markPaymentRequestError(resp, httpStatus)
+	return resp, nil
+}
+
+// CancelPaymentRequest cancels/deactivates an existing payment request.
+func (g *Gateway) CancelPaymentRequest(paymentRequestID string) (*PaymentRequestResponse, error) {
+	resp := &PaymentRequestResponse{}
+	httpStatus, err := g.doPayments("POST", cancelPaymentRequestURL(g.Client, paymentRequestID), nil, resp)
+	if err != nil {
+		return nil, err
+	}
+	markPaymentRequestError(resp, httpStatus)
+	return resp, nil
+}
+
 // GetPaymentToken retrieves saved payment token details.
 func (g *Gateway) GetPaymentToken(paymentTokenID string) (*PaymentTokenResponse, error) {
 	resp := &PaymentTokenResponse{}
