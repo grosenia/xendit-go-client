@@ -61,6 +61,23 @@ func (c Client) newCustomerRequest(method, path string, body io.Reader) (*http.R
 	return req, nil
 }
 
+// newPayoutsRequest is separate from newPaymentsRequest because Payout API v3 uses its own
+// api-version (2025-09-01), independent of the Payments API v3 api-version on the same Client.
+func (c Client) newPayoutsRequest(method, path string, idempotencyKey string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequest(method, path, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("api-version", PayoutAPIVersion)
+	if idempotencyKey != "" {
+		req.Header.Set("idempotency-key", idempotencyKey)
+	}
+	req.SetBasicAuth(c.SecretAPIKey, "")
+	return req, nil
+}
+
 // Gateway exposes Payments API v3 operations.
 type Gateway struct {
 	Client Client

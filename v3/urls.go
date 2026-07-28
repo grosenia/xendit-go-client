@@ -52,3 +52,11 @@ func getCustomersByReferenceIDURL(client Client, referenceID string) string {
 func createCustomerURL(client Client) string {
 	return baseURL(client) + "/customers"
 }
+
+func createPayoutURL(client Client) string {
+	return baseURL(client) + "/v3/payouts"
+}
+
+func getPayoutURL(client Client, payoutID string) string {
+	return baseURL(client) + "/v3/payouts/" + payoutID
+}
