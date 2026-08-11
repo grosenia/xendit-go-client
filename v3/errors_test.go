@@ -28,6 +28,33 @@ func TestErrorResponseCapturesValidationDetails(t *testing.T) {
 	}
 }
 
+// TestErrorResponseCapturesStringValidationDetails confirms the regression
+// found 2026-08-11 against real prod traffic is fixed: Xendit sometimes sends
+// plain strings in errors[] instead of {path, message} objects, and the
+// object-only assumption made json.Unmarshal fail the WHOLE response.
+func TestErrorResponseCapturesStringValidationDetails(t *testing.T) {
+	raw := `{
+		"error_code": "API_VALIDATION_ERROR",
+		"message": "Inputs are failing validation. The errors field contains details about which fields are violating validation",
+		"errors": ["recipient.address.postal_code is required"]
+	}`
+
+	var resp ErrorResponse
+	if err := json.Unmarshal([]byte(raw), &resp); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+
+	if len(resp.Errors) != 1 {
+		t.Fatalf("expected 1 validation detail, got %d", len(resp.Errors))
+	}
+	if resp.Errors[0].Message != "recipient.address.postal_code is required" {
+		t.Errorf("got %q", resp.Errors[0].Message)
+	}
+	if !strings.Contains(resp.Error(), "recipient.address.postal_code is required") {
+		t.Errorf("Error() should surface the string detail, got %q", resp.Error())
+	}
+}
+
 func TestErrorResponseWithoutDetailsFallsBackToMessage(t *testing.T) {
 	resp := ErrorResponse{ErrorCode: "SOME_ERROR", ErrorMessage: "something broke"}
 	if got := resp.Error(); got != "[SOME_ERROR] something broke" {
