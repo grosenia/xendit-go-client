@@ -1,6 +1,7 @@
 package xenditv3
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -19,13 +20,33 @@ type ErrorResponse struct {
 	ErrorStatus  bool               `json:"-"`
 }
 
-// ValidationDetail is one entry in ErrorResponse.Errors — Xendit's field path
-// + message shape is not consistently documented across endpoints, so both
-// fields are read loosely (path is sometimes "field" in older responses).
+// ValidationDetail is one entry in ErrorResponse.Errors. Xendit's own shape
+// for this is inconsistent across endpoints AND was confirmed 2026-08-11
+// against a real prod v3/payouts response to sometimes be a plain JSON
+// string per entry (e.g. "errors": ["recipient.address.postal_code is
+// required"]), not the {path, message} object this type originally assumed
+// — that mismatch made json.Unmarshal fail the ENTIRE response, wiping out
+// even error_code/message and making the diagnostic strictly worse than
+// before this field existed. UnmarshalJSON below accepts either shape.
 type ValidationDetail struct {
 	Path    string `json:"path"`
 	Field   string `json:"field"`
 	Message string `json:"message"`
+}
+
+func (d *ValidationDetail) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err == nil {
+		d.Message = s
+		return nil
+	}
+	type alias ValidationDetail // avoid infinite recursion into this UnmarshalJSON
+	var a alias
+	if err := json.Unmarshal(data, &a); err != nil {
+		return err
+	}
+	*d = ValidationDetail(a)
+	return nil
 }
 
 func (d ValidationDetail) String() string {
