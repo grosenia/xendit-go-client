@@ -93,3 +93,30 @@ func TestCreatePayoutErrorStatus(t *testing.T) {
 	is.True(resp.ErrorStatus)
 	is.Equal("API_VALIDATION_ERROR", resp.ErrorCode)
 }
+
+// TestCreatePayoutErrorDetails confirms PayoutResponse (previously duplicating ErrorCode/
+// ErrorMessage instead of embedding ErrorResponse) now captures the errors[] array too — the
+// field-level detail behind the generic "Inputs are failing validation" sentence.
+func TestCreatePayoutErrorDetails(t *testing.T) {
+	is := is.New(t)
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(`{
+			"error_code": "API_VALIDATION_ERROR",
+			"message": "Inputs are failing validation. The errors field contains details about which fields are violating validation",
+			"errors": [{"path": "recipient.address.postal_code", "message": "must be a valid postal code"}]
+		}`))
+	}))
+	defer srv.Close()
+
+	client := NewClient("test-secret")
+	client.BaseURL = srv.URL
+	gw := NewGateway(client)
+
+	resp, err := gw.CreatePayout(&PayoutRequest{ReferenceID: "detail-789"}, "detail-789")
+	is.NoErr(err)
+	is.True(resp.ErrorStatus)
+	is.Equal(1, len(resp.Errors))
+	is.Equal("recipient.address.postal_code", resp.Errors[0].Path)
+}

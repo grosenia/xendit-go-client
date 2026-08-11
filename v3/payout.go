@@ -77,16 +77,7 @@ type PayoutResponse struct {
 	FailureCode          string          `json:"failure_code,omitempty"`
 	BusinessID           string          `json:"business_id"`
 
-	ErrorCode    string `json:"error_code,omitempty"`
-	ErrorMessage string `json:"message,omitempty"`
-	ErrorStatus  bool   `json:"-"`
-}
-
-func (r *PayoutResponse) markHTTPError(httpStatus int) {
-	if r == nil {
-		return
-	}
-	r.ErrorStatus = httpStatus != 200 && httpStatus != 201
+	ErrorResponse
 }
 
 func (g *Gateway) doPayouts(method, path, idempotencyKey string, reqBody interface{}, resp *PayoutResponse) (int, error) {
